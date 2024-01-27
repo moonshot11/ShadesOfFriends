@@ -33,7 +33,7 @@ namespace ShadesOfFriends
         /// </summary>
         /// <param name="data"></param>
         /// <param name="filename"></param>
-        public static void StringToBrotliFire(string data, string filename)
+        public static void StringToBrotliFire(string filename, string data)
         {
             using (MemoryStream ms = new())
             using (BrotliStream bs = new(ms, CompressionMode.Compress))
@@ -44,6 +44,15 @@ namespace ShadesOfFriends
                 ms.Write(span);
                 bs.CopyTo(fs);
             }
+        }
+
+        public static string RemoveNonAlpha(string value)
+        {
+            string result = "";
+            foreach (char c in value)
+                if (char.IsLetter(c) || c == ' ')
+                    result += c;
+            return result;
         }
     }
 }
