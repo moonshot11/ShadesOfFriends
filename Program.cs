@@ -6,6 +6,7 @@ using System.Linq;
 
 using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace ShadesOfFriends
 {
@@ -31,12 +32,13 @@ namespace ShadesOfFriends
         public string Nick;
         public Gender Gender;
 
-        public string Fullname => string.Join(' ', new string[] { First, Last }.Where(x => x != null));
+        public readonly string Fullname =>
+            string.Join(' ', new string[] { First, Last }.Where(x => x != null));
     }
     public class Program
     {
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
             string user = System.Environment.UserName;
 
@@ -108,11 +110,16 @@ namespace ShadesOfFriends
                 Console.WriteLine(origname + " -> " + arrival.Fullname);
             }
 
+            string cityOutput = JsonConvert.SerializeObject(obj, Formatting.None);
+
+            foreach ((string oldname, string newname) in postWriteNames)
+                cityOutput = cityOutput.Replace(oldname, newname);
+
             // Write updated city data to new file
             if (enableCompression)
-                Util.StringToBrotliFire("output.json", obj.ToString());
+                Util.StringToBrotliFire("output.json", cityOutput);
             else
-                File.WriteAllText("output.json", obj.ToString());
+                File.WriteAllText("output.json", cityOutput);
         }
 
         public static List<Person> FetchNameData(string filename)
