@@ -42,6 +42,8 @@ namespace ShadesOfFriends
         {
             string user = System.Environment.UserName;
 
+            Console.WriteLine("Prompting user");
+
             OpenFileDialog cityOFD = new();
             cityOFD.Title = "Select city file.";
             cityOFD.InitialDirectory = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
@@ -63,19 +65,18 @@ namespace ShadesOfFriends
             Dictionary<int, Person> randmap = new();
             List< Tuple<string, string> > postWriteNames = new();
 
-            Console.Write("Reading save file...");
+            Console.WriteLine("Reading city file");
             string raw = enableCompression ?
                 Util.BrotliFileToString(cityfile) :
                 File.ReadAllText(cityfile);
-            Console.WriteLine("done!");
 
-            Console.Write("Parsing data...");
+            Console.WriteLine("Parsing city data");
             JObject obj = JObject.Parse(raw);
-            Console.WriteLine("done!");
 
             JToken[] citizens = obj["citizens"].ToArray();
             Random rand = new();
 
+            Console.WriteLine("Choosing citizens to replace");
             // Pick random citizens to replace
             while (randmap.Count < arrivals.Count)
             {
@@ -88,6 +89,7 @@ namespace ShadesOfFriends
                     randmap.Add(sel, arrival);
             }
 
+            Console.WriteLine("Replacing citizens");
             // Report and implement primary mapping
             foreach (var kv in randmap)
             {
@@ -107,14 +109,16 @@ namespace ShadesOfFriends
 
                 orig["citizenName"] = orig["firstName"].ToString() + ' ' + orig["surName"];
                 postWriteNames.Add(new(origname, orig["citizenName"].ToString()));
-                Console.WriteLine(origname + " -> " + arrival.Fullname);
+                Console.WriteLine("  " + origname + " -> " + arrival.Fullname);
             }
 
             string cityOutput = JsonConvert.SerializeObject(obj, Formatting.None);
 
+            Console.WriteLine("Cleaning stale citizen data");
             foreach ((string oldname, string newname) in postWriteNames)
                 cityOutput = cityOutput.Replace(oldname, newname);
 
+            Console.WriteLine("Writing output file");
             // Write updated city data to new file
             if (enableCompression)
                 Util.StringToBrotliFire("output.json", cityOutput);
