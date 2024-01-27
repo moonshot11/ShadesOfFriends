@@ -1,11 +1,12 @@
 ﻿
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
+using Brotli;
 using Newtonsoft.Json.Linq;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace ShadesOfFriends
@@ -67,7 +68,7 @@ namespace ShadesOfFriends
 
             Console.WriteLine("Reading city file");
             string raw = enableCompression ?
-                Util.BrotliFileToString(cityfile) :
+                Encoding.UTF8.GetString(File.ReadAllBytes(cityfile).DecompressFromBrotli()) :
                 File.ReadAllText(cityfile);
 
             Console.WriteLine("Parsing city data");
@@ -118,12 +119,17 @@ namespace ShadesOfFriends
             foreach ((string oldname, string newname) in postWriteNames)
                 cityOutput = cityOutput.Replace(oldname, newname);
 
-            Console.WriteLine("Writing output file");
             // Write updated city data to new file
+            Console.WriteLine("Writing output file");
             if (enableCompression)
-                Util.StringToBrotliFile("output.json", cityOutput);
+            {
+                byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
+                File.WriteAllBytes("output.bin", cityBytes.CompressToBrotli());
+            }
             else
+            {
                 File.WriteAllText("output.json", cityOutput);
+            }
         }
 
         public static List<Person> FetchNameData(string filename)
