@@ -121,7 +121,7 @@ namespace ShadesOfFriends
             Console.WriteLine("Writing output file");
             // Write updated city data to new file
             if (enableCompression)
-                Util.StringToBrotliFire("output.json", cityOutput);
+                Util.StringToBrotliFile("output.json", cityOutput);
             else
                 File.WriteAllText("output.json", cityOutput);
         }

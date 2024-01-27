@@ -33,7 +33,7 @@ namespace ShadesOfFriends
         /// </summary>
         /// <param name="data"></param>
         /// <param name="filename"></param>
-        public static void StringToBrotliFire(string filename, string data)
+        public static void StringToBrotliFile(string filename, string data)
         {
             using (MemoryStream ms = new())
             using (BrotliStream bs = new(ms, CompressionMode.Compress))
