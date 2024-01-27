@@ -94,10 +94,14 @@ namespace ShadesOfFriends
                 string origname = orig["citizenName"].ToString();
 
                 orig["surName"] = arrival.Last;
+
                 if (arrival.First != null)
                     orig["firstName"] = arrival.First;
+
                 if (arrival.Nick != null)
                     orig["casualName"] = arrival.Nick;
+                else if (arrival.First != null)
+                    orig["casualName"] = arrival.First;
 
                 orig["citizenName"] = orig["firstName"].ToString() + ' ' + orig["surName"];
                 postWriteNames.Add(new(origname, orig["citizenName"].ToString()));
