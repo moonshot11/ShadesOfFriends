@@ -44,21 +44,23 @@ namespace ShadesOfFriends
             string user = Environment.UserName;
             string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
 
-            Console.WriteLine("Prompting user");
-
+            Console.Write("Prompting for city file: ");
             OpenFileDialog cityOFD = new();
             cityOFD.Title = "Select city file.";
             cityOFD.InitialDirectory = citiesPath;
             cityOFD.Filter = "City files|*.cit;*.citb";
             if (cityOFD.ShowDialog() != DialogResult.OK)
                 return;
+            Console.WriteLine(Path.GetFileName(cityOFD.FileName));
 
+            Console.Write("Prompting for custom names file: ");
             OpenFileDialog namesOFD = new();
             namesOFD.Title = "Select custom names text file.";
             namesOFD.InitialDirectory = Environment.CurrentDirectory;
             namesOFD.Filter = "Text files|*.txt";
             if (namesOFD.ShowDialog() != DialogResult.OK)
                 return;
+            Console.WriteLine(Path.GetFileName(namesOFD.FileName));
 
             string cityFilename = cityOFD.FileName;
             string namesFilename = namesOFD.FileName;
@@ -123,11 +125,11 @@ namespace ShadesOfFriends
                 cityOutput = cityOutput.Replace(oldname, newname);
 
             // Write updated city data to new file
-            Console.WriteLine("Backing up original file");
             string backupFilename = Util.FindValidBackupName(cityFilename);
+            Console.WriteLine("Creating backup of original data: " + Path.GetFileName(backupFilename));
             File.Move(cityFilename, backupFilename);
 
-            Console.WriteLine("Writing output file");
+            Console.WriteLine("Writing patched file to Cities folder");
             if (enableCompression)
             {
                 byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
@@ -137,6 +139,9 @@ namespace ShadesOfFriends
             {
                 File.WriteAllText(cityFilename, cityOutput);
             }
+
+            Console.WriteLine("Done! Press any key to exit.");
+            Console.ReadKey(true);
         }
 
         public static List<Person> FetchNameData(string filename)
