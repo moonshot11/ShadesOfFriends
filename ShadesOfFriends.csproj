@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(ProjectDir)\lib\brolib_x* $(ProjectDir)\$(Outdir)" />
+    <Exec Command="copy $(ProjectDir)\lib\brolib_x64.dll $(ProjectDir)\$(Outdir)" />
   </Target>
 
 </Project>
