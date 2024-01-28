@@ -47,7 +47,17 @@ namespace ShadesOfFriends
             string user = Environment.UserName;
             string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
 
-            Console.Write("Prompting for city file: ");
+            // Process arguments
+
+            // Original citizen -> Custom citizen data
+            Dictionary<JToken, Person> randmap = new();
+
+            // Preserve a (fullname -> fullname) mapping to clean up dangling reference
+            // in the city file (wallets, employment data, etc.)
+            List<Tuple<string, string>> postWriteNames = new();
+
+            // -- Get files from user --
+
             OpenFileDialog cityOFD = new();
             OpenFileDialog namesOFD = new();
 
@@ -70,8 +80,8 @@ namespace ShadesOfFriends
             string cityFilename = cityOFD.FileName;
             string namesFilename = namesOFD.FileName;
             bool enableCompression = cityFilename.EndsWith('b');
-            Dictionary<int, Person> randmap = new();
-            List< Tuple<string, string> > postWriteNames = new();
+
+            // -- Read city data and names listfile --
 
             Console.WriteLine("Reading city file");
             string raw = enableCompression ?
@@ -81,7 +91,7 @@ namespace ShadesOfFriends
             Console.WriteLine("Parsing city data");
             JObject obj = JObject.Parse(raw);
 
-            JToken[] citizens = obj["citizens"].ToArray();
+            List<JToken> citizens = obj["citizens"].ToList();
             Random rand = new();
 
             Console.WriteLine("Reading custom names");
@@ -90,16 +100,40 @@ namespace ShadesOfFriends
             // -- Randomly choose which citizens' names to replace --
 
             Console.WriteLine("Choosing citizens to replace");
-            // Pick random citizens to replace
-            while (randmap.Count < arrivals.Count)
+
+            // Stop once custom names are exhausted (most likely),
+            // or there are no more citizens to rename
+            while (randmap.Count < arrivals.Count && citizens.Count > 0)
             {
                 Person arrival = arrivals[randmap.Count];
-                int sel = rand.Next() % citizens.Length;
-                if (randmap.ContainsKey(sel))
-                    continue;
-                if (arrival.Gender == Gender.Any || 
-                    arrival.Gender == (Gender)(int)(citizens[sel]["gender"]))
-                    randmap.Add(sel, arrival);
+
+                if (arrival.Gender == Gender.Any)
+                {
+                    JToken citizen = citizens[rand.Next(citizens.Count)];
+                    randmap.Add(citizen, arrival);
+                    citizens.Remove(citizen);
+                }
+                else
+                {
+                    // Gendered selection of citizens,
+                    // matching desired gender of current arrival
+                    JToken[] gs = citizens.Where(x => (Gender)(int)(x["gender"]) == arrival.Gender).ToArray();
+
+                    // If there are no more citizens of desired gender,
+                    // silently switch to Any mode and try again
+                    if (gs.Length == 0)
+                    {
+                        arrival.Gender = Gender.Any;
+                        continue;
+                    }
+
+                    // Since master citizens list seeds every iteration of this loop,
+                    // need to remove selected citizen from that list.
+                    // gs is refreshed every iteration on its own.
+                    JToken citizen = gs[rand.Next(gs.Length)];
+                    randmap.Add(citizen, arrival);
+                    citizens.Remove(citizen);
+                }
             }
 
             // -- Substitute citizen names --
@@ -107,9 +141,9 @@ namespace ShadesOfFriends
             Console.WriteLine("Replacing citizens");
             foreach (var kv in randmap)
             {
+                JToken orig = kv.Key;
                 Person arrival = kv.Value;
-                JToken orig = citizens[kv.Key];
-                string origname = orig["citizenName"].ToString();
+                string origFullname = orig["citizenName"].ToString();
 
                 orig["surName"] = arrival.Last;
 
@@ -121,9 +155,9 @@ namespace ShadesOfFriends
                 else if (arrival.First != null)
                     orig["casualName"] = arrival.First;
 
-                orig["citizenName"] = orig["firstName"].ToString() + ' ' + orig["surName"];
-                postWriteNames.Add(new(origname, orig["citizenName"].ToString()));
-                Console.WriteLine("  " + origname + " -> " + arrival.Fullname);
+                orig["citizenName"] = orig["firstName"] + " " + orig["surName"];
+                postWriteNames.Add( new(origFullname, orig["citizenName"].ToString()) );
+                Console.WriteLine("  " + origFullname + " -> " + arrival.Fullname);
             }
 
             // -- Clean up dangling mentions of original names --
