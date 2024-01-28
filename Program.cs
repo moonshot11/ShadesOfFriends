@@ -50,13 +50,15 @@ namespace ShadesOfFriends
             cityOFD.Title = "Select city file.";
             cityOFD.InitialDirectory = citiesPath;
             cityOFD.Filter = "City files|*.cit;*.citb";
-            cityOFD.ShowDialog();
+            if (cityOFD.ShowDialog() != DialogResult.OK)
+                return;
 
             OpenFileDialog namesOFD = new();
             namesOFD.Title = "Select custom names text file.";
             namesOFD.InitialDirectory = Environment.CurrentDirectory;
             namesOFD.Filter = "Text files|*.txt";
-            namesOFD.ShowDialog();
+            if (namesOFD.ShowDialog() != DialogResult.OK)
+                return;
 
             string cityFilename = cityOFD.FileName;
             string namesFilename = namesOFD.FileName;
