@@ -25,6 +25,13 @@ namespace ShadesOfFriends
         Any = 3
     }
 
+    public enum ForceCompMode
+    {
+        NoForce,
+        Compression,
+        NoCompression
+    }
+
     /// <summary>
     /// A custom entry provided by the user
     /// </summary>
@@ -42,10 +49,36 @@ namespace ShadesOfFriends
     public class Program
     {
         [STAThread]
-        public static int Main()
+        public static int Main(string[] args)
         {
             string user = Environment.UserName;
             string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
+
+            uint compQuality = 5;
+            uint compWindow = 22;
+            ForceCompMode compForce = ForceCompMode.NoForce;
+
+            foreach (string arg in args)
+            {
+                if (arg.StartsWith("-q") &&
+                    uint.TryParse(arg[2..], out uint _qual) &&
+                    _qual >= 0 && _qual <= 11)
+                {
+                    compQuality = _qual;
+                }
+                else if (arg.StartsWith("-w") &&
+                    uint.TryParse(arg[2..], out uint _window) &&
+                    _window >= 10 && _window <= 24)
+                {
+                    compWindow = _window;
+                }
+                else if (arg.ToLower().Contains("-noforce"))
+                    compForce = ForceCompMode.NoForce;
+                else if (arg.ToLower().Contains("-compress"))
+                    compForce = ForceCompMode.Compression;
+                else if (arg.ToLower().Contains("-nocompress"))
+                    compForce = ForceCompMode.NoCompression;
+            }
 
             // Process arguments
 
@@ -182,10 +215,10 @@ namespace ShadesOfFriends
 
             // Create new city file with updated names
             Console.WriteLine("Writing patched file to Cities folder");
-            if (enableCompression)
+            if (compForce == ForceCompMode.Compression || compForce == ForceCompMode.NoForce && enableCompression)
             {
                 byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
-                File.WriteAllBytes(cityFilename, cityBytes.CompressToBrotli());
+                File.WriteAllBytes(cityFilename, cityBytes.CompressToBrotli(compQuality, compWindow));
             }
             else
             {
