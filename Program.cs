@@ -41,35 +41,36 @@ namespace ShadesOfFriends
         [STAThread]
         public static void Main()
         {
-            string user = System.Environment.UserName;
+            string user = Environment.UserName;
+            string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
 
             Console.WriteLine("Prompting user");
 
             OpenFileDialog cityOFD = new();
             cityOFD.Title = "Select city file.";
-            cityOFD.InitialDirectory = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
+            cityOFD.InitialDirectory = citiesPath;
             cityOFD.Filter = "City files|*.cit;*.citb";
             cityOFD.ShowDialog();
 
             OpenFileDialog namesOFD = new();
             namesOFD.Title = "Select custom names text file.";
-            namesOFD.InitialDirectory = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
+            namesOFD.InitialDirectory = Environment.CurrentDirectory;
             namesOFD.Filter = "Text files|*.txt";
             namesOFD.ShowDialog();
 
-            string cityfile = cityOFD.FileName;
-            string namefile = namesOFD.FileName;
+            string cityFilename = cityOFD.FileName;
+            string namesFilename = namesOFD.FileName;
 
-            List<Person> arrivals = FetchNameData(namefile);
+            List<Person> arrivals = FetchNameData(namesFilename);
 
-            bool enableCompression = cityfile.EndsWith('b');
+            bool enableCompression = cityFilename.EndsWith('b');
             Dictionary<int, Person> randmap = new();
             List< Tuple<string, string> > postWriteNames = new();
 
             Console.WriteLine("Reading city file");
             string raw = enableCompression ?
-                Encoding.UTF8.GetString(File.ReadAllBytes(cityfile).DecompressFromBrotli()) :
-                File.ReadAllText(cityfile);
+                Encoding.UTF8.GetString(File.ReadAllBytes(cityFilename).DecompressFromBrotli()) :
+                File.ReadAllText(cityFilename);
 
             Console.WriteLine("Parsing city data");
             JObject obj = JObject.Parse(raw);
@@ -120,15 +121,19 @@ namespace ShadesOfFriends
                 cityOutput = cityOutput.Replace(oldname, newname);
 
             // Write updated city data to new file
+            Console.WriteLine("Backing up original file");
+            string backupFilename = Util.FindValidBackupName(cityFilename);
+            File.Move(cityFilename, backupFilename);
+
             Console.WriteLine("Writing output file");
             if (enableCompression)
             {
                 byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
-                File.WriteAllBytes("output.bin", cityBytes.CompressToBrotli());
+                File.WriteAllBytes(cityFilename, cityBytes.CompressToBrotli());
             }
             else
             {
-                File.WriteAllText("output.json", cityOutput);
+                File.WriteAllText(cityFilename, cityOutput);
             }
         }
 
