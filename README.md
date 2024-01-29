@@ -105,3 +105,7 @@ Air Bud
 Note that blank lines are allowed at any point, that a gender mode can be selected at any time, and that modes can be repeated. Since `#any` is the default mode, the first four names in the sample file will each be assigned to a random citizen with no regard for gender.
 
 Happy Sleuthing!
+
+# How to build (for developers)
+
+Clone the repo, then create a folder called `extlib`. Copy `Assembly-CSharp.dll` and `libbrotli.dll` into that folder. There is already a post-build event in the project file which will copy these dlls into the release folder.
