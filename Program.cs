@@ -54,8 +54,8 @@ namespace ShadesOfFriends
             string user = Environment.UserName;
             string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
 
-            uint compQuality = 5;
-            uint compWindow = 22;
+            uint compQuality = 9;
+            uint compWindow = 19;
             ForceCompMode compForce = ForceCompMode.NoForce;
 
             foreach (string arg in args)
@@ -213,15 +213,22 @@ namespace ShadesOfFriends
                 return 1;
             }
 
+            cityFilename = Path.Join(
+                Path.GetDirectoryName(cityFilename),
+                Path.GetFileNameWithoutExtension(cityFilename)
+            );
+
             // Create new city file with updated names
             Console.WriteLine("Writing patched file to Cities folder");
             if (compForce == ForceCompMode.Compression || compForce == ForceCompMode.NoForce && enableCompression)
             {
+                cityFilename += ".citb";
                 byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
                 File.WriteAllBytes(cityFilename, cityBytes.CompressToBrotli(compQuality, compWindow));
             }
             else
             {
+                cityFilename += ".cit";
                 File.WriteAllText(cityFilename, cityOutput);
             }
 
