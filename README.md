@@ -4,22 +4,43 @@ A city file patcher for [Shadows of Doubt](https://store.steampowered.com/app/98
 
 # Installation
 
-Pending
+1. Download and unzip the latest release of this patcher.
+
+2. Copy `libbrotli.dll` from `<Shadows of Doubt install path>\Shadows of Doubt_Data\Plugins\x86_64\` into the folder where you unzipped `ShadesOfFriends.exe`. The DLL should be in the same folder as the executable.
+
+3. Copy Assembly-CSharp.dll
+
+    a. Open Steam, find Shadows of Doubt in your library, right-click, and select "Properties."
+
+    b. Select the "Betas" tab on the left.
+
+    c. In the "Beta Participation" section, select the drop-down box and choose the "mono" option.
+
+    d. Close the properties window, and if necessary, initiate the Shadows of Doubt update.
+
+    e. Copy `Assembly-CSharp.dll` from `<Shadows of Doubt install path>\Shadows of Doubt_Data\Managed\` into the folder where you unzipped `ShadesOfFriends.exe`. The DLL should be in the same folder as the executable and the other DLL that you copied.
+
+    f. Repeat steps a-d, **except** in step (c), choose the "None" option from the drop-down box to revert the installation to the main branch of the game.
 
 # Usage
 
-When you run ShadesOfFriends.exe, it will prompt you for a city file (either the `.cit` or `.citb` extension), and a text file containing the names you want to inject into the game. The patcher will then:
+When you run `ShadesOfFriends.exe`, it will prompt you for a city file (files with a `.cit` or `.citb` extension), and a text file containing the names you want to inject into the game. The patcher will then:
 
-1. Parse the selected city file (this may take several minutes!).
+1. Parse the selected city file (this may take several minutes!) and your text file of custom names.
+
 2. Choose random citizens to rename.
-3. Back up the original file with a `.bak#` extension. `#` is the first available number for a file that doesn't exist, e.g. if `mycity.bak1` already exists, that file will be left alone, and the patcher will create a backup at `mycity.bak2`.
-4. Write the patched city file directly to the cities folder.
 
-**Note:** The patcher ONLY updates the city file. It is strongly recommended to start a new save after updating a city, since otherwise certain items (employment records, wallets, etc.) captured by save files will refer to old name.
+3. Back up the original file with a `.bak#` extension, where`#` is the first available number for a file that doesn't exist, starting with 1.
+
+4. Write the patched city file directly to the cities folder. (The patcher will retain the compressed/uncompressed state of the original city file when generating the output.)
+
+If `mycity.citb.bak1` already exists, that file will be left alone, and the patcher will create a backup at `mycity.citb.bak2`. Therefore, if you accidentally patch an already-patched city file (not harmful, but not recommended), the file with the `.bak1` extension will retain the original city data produced by Shadows of Doubt, before anything was modified.
+
+**Note:** The patcher ONLY updates the city file. It is strongly recommended to start a new save after updating a city, since otherwise certain items (employment records, wallets, etc.) captured by save files will refer to names which have been overwritten.
 
 ### Creating the names file
 
-You must make the text file beforehand, by placing each name on a separate line. A name can take one of three formats:
+Before running `ShadesOfFriends.exe` you must create a text file containing the custom names you want to add. Each name belongs on a separate line. A name can take one of three formats:
 
 ```
 Firstname Lastname Nickname
@@ -33,9 +54,11 @@ Names can contain only letters, and all spaces are considered separators. All in
 
 ### Choosing gender
 
-In addition, you can optionally specify the gender of your names. The patcher will select citizens which have already been assigned that gender. By default, the patcher is in `#any` mode and will randomly select citizens to replace. A different mode can be activated by providing a pound sign followed by the gender. Note that nonbinary is a third gender category defined in Shadows of Doubt, and is different from the `#any` mode.
+You can optionally specify the genders of your names. The patcher will select citizens which have already been assigned that gender. By default, the patcher is in `#any` mode, and the citizens adopting your custom names will be chosen completely at random. A gender mode can be activated by providing a pound sign followed by the gender. All names below that line will be assigned to citizens of the corresponding gender. (If there are no more citizens of that gender, the patcher will silently switch back to `#any` mode.)
 
-To change the gender mode, provide the specifier on its own line:
+Note that nonbinary is a third gender category defined in Shadows of Doubt, and is distinct from the `#any` mode, which is means "pick any gender for this name."
+
+To change the gender mode, provide one of the following specifiers on its own line:
 
 ```
 #any
@@ -47,10 +70,11 @@ To change the gender mode, provide the specifier on its own line:
 A full, sample file of names might look as follows:
 
 ```
+Charlie
 Bosley
-Alex Munday
-Dylan Sanders
-Natalie Cook Nat
+Alex
+Dylan
+Nat Cook
 
 #male
 Jacques Clouseau Jack
@@ -58,13 +82,14 @@ Encyclopedia Brown
 
 #female
 Jennifer Aniston Jen
-Monica Geller Mon
+Monica Geller
 Pheebs
 
 Cher
 Nancy Drew
 
 #male
+
 Sherlock Holmes
 Joe Hardy
 Frank Hardy
@@ -77,4 +102,6 @@ Wishbone
 Air Bud
 ```
 
-Note that blank lines are allowed at any point, and that a gender mode can be selected at any time, and even repeated. Since `#any` is the default mode, the first four names in the sample file will each be assigned to a random citizen with no regard for gender.
+Note that blank lines are allowed at any point, that a gender mode can be selected at any time, and that modes can be repeated. Since `#any` is the default mode, the first four names in the sample file will each be assigned to a random citizen with no regard for gender.
+
+Happy Sleuthing!

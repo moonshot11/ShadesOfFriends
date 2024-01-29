@@ -1,0 +1,30 @@
+Charlie
+Bosley
+Alex
+Dylan
+Nat Cook
+
+#male
+Jacques Clouseau Jack
+Encyclopedia Brown
+
+#female
+Jennifer Aniston Jen
+Monica Geller
+Pheebs
+
+Cher
+Nancy Drew
+
+#male
+
+Sherlock Holmes
+Joe Hardy
+Frank Hardy
+
+#nonbinary
+Pat
+
+#any
+Wishbone
+Air Bud
