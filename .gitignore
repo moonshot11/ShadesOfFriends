@@ -4,6 +4,9 @@
 extlib/
 release/
 
+/*.txt
+/*.zip
+
 # User-specific files
 *.suo
 *.user

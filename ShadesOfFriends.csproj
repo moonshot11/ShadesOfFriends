@@ -15,8 +15,11 @@
 
   <ItemGroup>
     <Compile Remove="extlib\**" />
+    <Compile Remove="release\**" />
     <EmbeddedResource Remove="extlib\**" />
+    <EmbeddedResource Remove="release\**" />
     <None Remove="extlib\**" />
+    <None Remove="release\**" />
   </ItemGroup>
 
   <ItemGroup>
