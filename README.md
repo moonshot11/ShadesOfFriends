@@ -78,10 +78,3 @@ Air Bud
 ```
 
 Note that blank lines are allowed at any point, and that a gender mode can be selected at any time, and even repeated. Since `#any` is the default mode, the first four names in the sample file will each be assigned to a random citizen with no regard for gender.
-
-
-# Attribution
-
-Uses the Brotli library originally implemented by @XieJJ99, and updated by @Yellow-Dog-Man. Built locally for ShadesOfFriends from this commit:
-
-https://github.com/Yellow-Dog-Man/brotli.net/commit/089bdfea7c1e7516472527798bde1ce0e6413176

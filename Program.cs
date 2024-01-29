@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Brotli;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
