@@ -4,7 +4,7 @@ A city file patcher for [Shadows of Doubt](https://store.steampowered.com/app/98
 
 # Installation
 
-None! Just download the latest ZIP file and unzip its contents to anywhere. Just make sure all the files stay together.
+Pending
 
 # Usage
 

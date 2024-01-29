@@ -11,7 +11,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="extlib\**" />
+    <EmbeddedResource Remove="extlib\**" />
+    <None Remove="extlib\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>extlib\Assembly-CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -28,5 +40,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(ProjectDir)\extlib\*.dll $(ProjectDir)$(OutDir)" />
+  </Target>
 
 </Project>

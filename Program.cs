@@ -40,6 +40,12 @@ namespace ShadesOfFriends
 
     public class Program
     {
+        // -- Compression parameters --
+        const int COMPRESSION_QUALITY = 1;
+        const int COMPRESSION_WINDOW = 19;
+        const int COMPRESSION_BLOCK_SIZE = 0;
+        const int COMPRESSION_MODE = 0;
+
         [STAThread]
         public static int Main()
         {
@@ -84,7 +90,9 @@ namespace ShadesOfFriends
 
             Console.WriteLine("Reading city file");
             string raw = enableCompression ?
-                Encoding.UTF8.GetString(File.ReadAllBytes(cityFilename).DecompressFromBrotli()) :
+                Encoding.UTF8.GetString(
+                    brotli.decompressBuffer(File.ReadAllBytes(cityFilename), useFooter: true)
+                ) :
                 File.ReadAllText(cityFilename);
 
             Console.WriteLine("Parsing city data");
@@ -184,7 +192,13 @@ namespace ShadesOfFriends
             if (enableCompression)
             {
                 byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
-                File.WriteAllBytes(cityFilename, cityBytes.CompressToBrotli());
+                File.WriteAllBytes(cityFilename,
+                    brotli.compressBuffer(cityBytes, [0], includeSize: true,
+                    quality: COMPRESSION_QUALITY,
+                    lgwin: COMPRESSION_WINDOW,
+                    lgblock: COMPRESSION_BLOCK_SIZE,
+                    mode: COMPRESSION_MODE)
+                );
             }
             else
             {
