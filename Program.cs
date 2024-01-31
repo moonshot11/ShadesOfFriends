@@ -90,9 +90,7 @@ namespace ShadesOfFriends
 
             Console.WriteLine("Reading city file");
             string raw = enableCompression ?
-                Encoding.UTF8.GetString(
-                    brotli.decompressBuffer(File.ReadAllBytes(cityFilename), useFooter: true)
-                ) :
+                Util.Decompress(cityFilename) :
                 File.ReadAllText(cityFilename);
 
             Console.WriteLine("Parsing city data");
@@ -191,14 +189,7 @@ namespace ShadesOfFriends
             Console.WriteLine("Writing patched file to Cities folder");
             if (enableCompression)
             {
-                byte[] cityBytes = Encoding.UTF8.GetBytes(cityOutput);
-                File.WriteAllBytes(cityFilename,
-                    brotli.compressBuffer(cityBytes, [0], includeSize: true,
-                    quality: COMPRESSION_QUALITY,
-                    lgwin: COMPRESSION_WINDOW,
-                    lgblock: COMPRESSION_BLOCK_SIZE,
-                    mode: COMPRESSION_MODE)
-                );
+                Util.CompressAndWrite(cityOutput, cityFilename);
             }
             else
             {
