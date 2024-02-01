@@ -294,15 +294,16 @@ namespace ShadesOfFriends
                 {
                     person.Last = char.ToUpper(words[0][0]) + words[0][1..].ToLower();
                 }
-                else if (words.Length >= 2)
+                else if (words.Length == 2)
                 {
                     person.First = char.ToUpper(words[0][0]) + words[0][1..].ToLower();
                     person.Last = char.ToUpper(words[1][0]) + words[1][1..].ToLower();
                 }
-
-                if (words.Length >= 3)
+                else if (words.Length >= 3)
                 {
-                    person.Nick = char.ToUpper(words[2][0]) + words[2][1..].ToLower();
+                    person.First = char.ToUpper(words[0][0]) + words[0][1..].ToLower();
+                    person.Nick = char.ToUpper(words[1][0]) + words[1][1..].ToLower();
+                    person.Last = char.ToUpper(words[2][0]) + words[2][1..].ToLower();
                 }
 
                 person.Gender = mode;
