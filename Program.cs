@@ -51,6 +51,12 @@ namespace ShadesOfFriends
         {
             string user = Environment.UserName;
             string citiesPath = @$"C:\Users\{user}\AppData\LocalLow\ColePowered Games\Shadows of Doubt\Cities\";
+            const bool verbose =
+#if DEBUG
+                true;
+                #else
+                false;
+#endif
 
             // Process arguments
 
@@ -121,7 +127,8 @@ namespace ShadesOfFriends
                 for (int c = citizens.Count-1; c >= 0; c--)
                     if (Util.CompareCitizenAndArrival(citizens[c], arrivals[a]))
                     {
-                        Console.WriteLine("Already in city: " + arrivals[a].Fullname);
+                        if (verbose)
+                            Console.WriteLine("Already in city: " + arrivals[a].Fullname);
                         arrivals.RemoveAt(a);
                         citizens.RemoveAt(c);
                         break;
@@ -189,7 +196,8 @@ namespace ShadesOfFriends
 
                 orig["citizenName"] = orig["firstName"] + " " + orig["surName"];
                 postWriteNames.Add( new(origFullname, orig["citizenName"].ToString()) );
-                Console.WriteLine("  " + origFullname + " -> " + arrival.Fullname);
+                if (verbose)
+                    Console.WriteLine("  " + origFullname + " -> " + arrival.Fullname);
             }
 
             // -- Clean up dangling mentions of original names --
