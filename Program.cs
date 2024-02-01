@@ -104,9 +104,34 @@ namespace ShadesOfFriends
             Console.WriteLine("Reading custom names");
             List<Person> arrivals = FetchNameData(namesFilename);
 
+            if (arrivals.Count == 0)
+            {
+                Console.WriteLine("Names file contains no names! Exiting.");
+                return 0;
+            }
+
             // -- Randomly choose which citizens' names to replace --
 
             Console.WriteLine("Choosing citizens to replace");
+
+            // First, remove custom names from BOTH lists (current citizens and arrivals)
+            // so that they won't be duplicated or replaced.
+
+            for (int a = arrivals.Count-1; a >= 0; a--)
+                for (int c = citizens.Count-1; c >= 0; c--)
+                    if (Util.CompareCitizenAndArrival(citizens[c], arrivals[a]))
+                    {
+                        Console.WriteLine("Already in city: " + arrivals[a].Fullname);
+                        arrivals.RemoveAt(a);
+                        citizens.RemoveAt(c);
+                        break;
+                    }
+
+            if (arrivals.Count == 0)
+            {
+                Console.WriteLine("All names already found in city file. Exiting.");
+                return 0;
+            }
 
             // Stop once custom names are exhausted (most likely),
             // or there are no more citizens to rename
