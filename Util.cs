@@ -17,7 +17,7 @@ namespace ShadesOfFriends
         {
             string result = "";
             foreach (char c in value)
-                if (char.IsLetter(c) || c == ' ')
+                if (char.IsLetter(c) || " -".Contains(c))
                     result += c;
             return result;
         }
